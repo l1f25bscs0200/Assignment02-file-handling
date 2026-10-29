@@ -1,0 +1,47 @@
+/*
+ * Name       : IBRAHIM KHAN
+ * Reg No     : L1F25BSCS0200
+ * Assignment : 02 - File Handling
+ * Question   : Q2 - Parking Report
+ */
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+int main() {
+    ifstream inFile("parking.txt");
+    if (!inFile) { cout << "parking.txt not found!" << endl; return 1; }
+    int d, m, y; char slash;
+    inFile >> d >> slash >> m >> slash >> y;
+    inFile.ignore(100, '\n');
+    inFile.ignore(100, '\n');
+    ofstream receipts("receipts.txt");
+    cout << "Parking report for " << d << "/" << m << "/" << y << endl;
+    receipts << "Receipts for " << d << "/" << m << "/" << y << endl;
+    char plate[15], type, colon;
+    char longest[15] = "";
+    int ih, im, oh, om, cars = 0, bikes = 0, count = 0;
+    int collected = 0, longestMinutes = -1;
+    while (count < 30 && inFile >> plate >> type >> ih >> colon >> im >> oh >> colon >> om) {
+        int minutes = (oh * 60 + om) - (ih * 60 + im);
+        int charged = (minutes + 59) / 60;
+        if (charged == 0) charged = 1;
+        int fee;
+        if (type == 'C') { cars++; fee = charged * 100; }
+        else { bikes++; fee = charged * 40; }
+        count++;
+        collected += fee;
+        if (minutes > longestMinutes) { longestMinutes = minutes; strcpy(longest, plate); }
+        cout << plate << " " << (type == 'C' ? "Car" : "Bike") << " "
+             << minutes / 60 << " h " << minutes % 60 << " min Fee: " << fee << endl;
+        receipts << plate << " " << fee << endl;
+    }
+    inFile.close(); receipts.close();
+    if (count == 0) { cout << "No vehicles found!" << endl; return 0; }
+    cout << "Vehicles: " << count << endl;
+    cout << "Cars: " << cars << " Bikes: " << bikes << endl;
+    cout << "Total collected: " << collected << endl;
+    cout << "Longest stay: " << longest << " (" << longestMinutes / 60
+         << " h " << longestMinutes % 60 << " min)" << endl;
+    return 0;
+}
