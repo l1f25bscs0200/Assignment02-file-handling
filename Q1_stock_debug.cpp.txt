@@ -1,0 +1,42 @@
+/*
+ * Name       :IBRAHIM KHAN
+ * Reg No     : L1F25BSCS0200
+ * Assignment : 02 - File Handling
+ * Question   : Q1 - Stock Report (Debugging)
+ */
+#include <iostream>
+// FIX 1: File streams require the fstream header.
+#include <fstream>
+using namespace std;
+int main() {
+    ifstream inFile("stock.txt");
+    // FIX 2: Show the error only when opening fails.
+    if (!inFile) {
+        cout << "stock.txt not found!" << endl;
+        return 1;
+    }
+    // FIX 3: Append instead of deleting old reorder records.
+    ofstream reorder("reorder.txt", ios::app);
+    char code[10];
+    int qty, count = 0, low = 0;
+    double price;
+    // FIX 4: Stock value needs decimals.
+    double total = 0;
+    // FIX 5: Ignore the column headings before reading items.
+    inFile.ignore(100, '\n');
+    while (count < 50 && inFile >> code >> qty >> price) {
+        count++;
+        total = total + qty * price;
+        if (qty < 10) {
+            // FIX 6: Each low-stock item must go on its own line.
+            reorder << code << " " << qty << endl;
+            low++;
+        }
+    }
+    inFile.close();
+    reorder.close();
+    cout << "Items: " << count << endl;
+    cout << "Total stock value: " << total << endl;
+    cout << "Low stock items: " << low << endl;
+    return 0;
+}
